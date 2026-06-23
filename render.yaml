@@ -1,0 +1,35 @@
+# render.yaml — PIKABOO backend deployment
+# Drop this in the root of your pikaboo-api folder
+# Render reads it automatically when you connect the repo
+
+services:
+  - type: web
+    name: pikaboo-api
+    runtime: node
+    region: frankfurt          # closest to Nigeria — change to oregon if you prefer
+    plan: free
+
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+
+    healthCheckPath: /health
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      - key: PORT
+        value: 4000
+
+      # ── Set these in the Render dashboard (not here — keeps secrets safe) ──
+      # DATABASE_URL   → Render gives you this automatically from the DB below
+      # JWT_SECRET     → generate with: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+      # REDIS_URL      → optional for now; omit and the app runs without Redis
+      # CLIENT_URL     → your InfinityFree domain, e.g. https://pikaboo.rf.gd
+
+databases:
+  - name: pikaboo-db
+    databaseName: pikaboo
+    user: pikaboo_user
+    plan: free
+    region: frankfurt
