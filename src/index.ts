@@ -19,19 +19,11 @@ const PORT = parseInt(process.env.PORT ?? '4000', 10);
 // ── Core middleware ───────────────────────────────────────────
 
 app.use(helmet());
-// Accept InfinityFree domain + local dev
-const ALLOWED_ORIGINS = [
-  process.env.CLIENT_URL,
-  'http://localhost:3000',
-  'http://127.0.0.1:3000',
-].filter(Boolean) as string[];
 
+// Allow all origins — PIKABOO is a public app
+// Requests from pikaboo.site.je, local dev, and any other origin are all accepted
 app.use(cors({
-  origin: (origin, cb) => {
-    if (!origin) return cb(null, true);
-    if (ALLOWED_ORIGINS.some(o => origin.startsWith(o))) return cb(null, true);
-    cb(new Error('CORS: origin not allowed'));
-  },
+  origin: true,          // reflects the request origin back — works with credentials
   credentials: true,
 }));
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
